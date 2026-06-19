@@ -1,0 +1,21 @@
+"use client";
+interface Toast {
+  id: string | number;
+  message: string;
+  type: "success" | "error" | "info" | "warning";
+}
+
+interface ToastsProps {
+  toasts: Toast[];
+}
+export default function Toasts({ toasts }: ToastsProps) {
+  return (
+    <div className="toast-wrap">
+      {toasts.map((t) => (
+        <div key={t.id} className={`toast ${t.type}`}>
+          {t.msg}
+        </div>
+      ))}
+    </div>
+  );
+}
