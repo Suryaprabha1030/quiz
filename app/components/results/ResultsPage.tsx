@@ -1,4 +1,5 @@
 "use client";
+import { sb } from "@/app/lib/supabase";
 import { useEffect, useState } from "react";
 
 interface ResultsPageProps {
@@ -14,8 +15,8 @@ export function ResultsPage({
   toast,
   onBack,
 }: ResultsPageProps) {
-  const [responses, setResponses] = useState([]);
-  const [questions, setQuestions] = useState([]);
+  const [responses, setResponses] = useState<any>([]);
+  const [questions, setQuestions] = useState<any>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("leaderboard");
 
@@ -23,13 +24,13 @@ export function ResultsPage({
     (async () => {
       try {
         const rtbl = await sb.from("responses", session.token);
-        const data = await rtbl.select(
+        const data: any = await rtbl.select(
           "*",
           `quiz_id=eq.${quiz.id}&order=score.desc,time_taken.asc`,
         );
         if (Array.isArray(data)) setResponses(data);
         const qtbl = await sb.from("questions", session.token);
-        const qdata = await qtbl.select(
+        const qdata: any = await qtbl.select(
           "*",
           `quiz_id=eq.${quiz.id}&order=position.asc`,
         );
@@ -41,9 +42,9 @@ export function ResultsPage({
     })();
   }, [quiz.id]);
 
-  const rankClass = (i) =>
+  const rankClass = (i: any) =>
     i === 0 ? "gold" : i === 1 ? "silver" : i === 2 ? "bronze" : "";
-  const rankEmoji = (i) =>
+  const rankEmoji = (i: any) =>
     i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
 
   return (
@@ -117,7 +118,7 @@ export function ResultsPage({
         </div>
       ) : tab === "leaderboard" ? (
         <div>
-          {responses.map((r, i) => (
+          {responses.map((r: any, i: any) => (
             <div key={r.id} className="lb-row">
               <div className={`lb-rank ${rankClass(i)}`}>{rankEmoji(i)}</div>
               <div className="lb-email">{r.user_email || "Anonymous"}</div>
@@ -144,8 +145,8 @@ export function ResultsPage({
         </div>
       ) : (
         <div>
-          {questions.map((q, qi) => {
-            const qresps = responses.map((r) => r.answers?.[qi]);
+          {questions.map((q: any, qi: any) => {
+            const qresps = responses.map((r: any) => r.answers?.[qi]);
             return (
               <div
                 key={q.id}
@@ -159,8 +160,8 @@ export function ResultsPage({
                   {q.text}
                 </div>
                 {q.type === "mc" &&
-                  (q.options || []).map((opt, oi) => {
-                    const count = qresps.filter((a) => a === oi).length;
+                  (q.options || []).map((opt: any, oi: any) => {
+                    const count = qresps.filter((a: any) => a === oi).length;
                     const pct = responses.length
                       ? Math.round((count / responses.length) * 100)
                       : 0;
@@ -214,8 +215,8 @@ export function ResultsPage({
                     );
                   })}
                 {q.type === "tf" &&
-                  [true, false].map((v) => {
-                    const count = qresps.filter((a) => a === v).length;
+                  [true, false].map((v: any) => {
+                    const count = qresps.filter((a: any) => a === v).length;
                     const pct = responses.length
                       ? Math.round((count / responses.length) * 100)
                       : 0;
@@ -275,7 +276,7 @@ export function ResultsPage({
                       gap: ".4rem",
                     }}
                   >
-                    {qresps.filter(Boolean).map((a, ai) => (
+                    {qresps.filter(Boolean).map((a: any, ai: any) => (
                       <div
                         key={ai}
                         style={{
@@ -298,11 +299,12 @@ export function ResultsPage({
                 )}
                 {q.type === "rating" &&
                   (() => {
-                    const vals = qresps.filter((v) => v !== undefined);
+                    const vals = qresps.filter((v: any) => v !== undefined);
                     const avg = vals.length
-                      ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(
-                          1,
-                        )
+                      ? (
+                          vals.reduce((a: any, b: any) => a + b, 0) /
+                          vals.length
+                        ).toFixed(1)
                       : "—";
                     return (
                       <div

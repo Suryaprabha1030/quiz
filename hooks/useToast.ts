@@ -3,15 +3,15 @@
 import { useState, useCallback } from "react";
 
 export default function useToast() {
-  const [toasts, setToasts] = useState([]);
+  const [toasts, setToasts] = useState<any>([]);
 
-  const show = useCallback((msg, type = "info") => {
+  const show = useCallback((msg: any, type = "info") => {
     const id = Date.now();
 
-    setToasts((p) => [...p, { id, msg, type }]);
+    setToasts((p: any) => [...p, { id, msg, type }]);
 
     setTimeout(() => {
-      setToasts((p) => p.filter((t) => t.id !== id));
+      setToasts((p: any) => p.filter((t: any) => t.id !== id));
     }, 3000);
   }, []);
 

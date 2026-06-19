@@ -96,17 +96,17 @@ export function QuizBuilder({
     }
   }
 
-  function updateQ(idx, field, val) {
+  function updateQ(idx: any, field: any, val: any) {
     setQuestions((p) =>
       p.map((q, i) => (i === idx ? { ...q, [field]: val } : q)),
     );
   }
-  function addOption(qi) {
+  function addOption(qi: any) {
     setQuestions((p) =>
       p.map((q, i) => (i === qi ? { ...q, options: [...q.options, ""] } : q)),
     );
   }
-  function updateOption(qi, oi, val) {
+  function updateOption(qi: any, oi: any, val: any) {
     setQuestions((p) =>
       p.map((q, i) =>
         i === qi
@@ -115,7 +115,7 @@ export function QuizBuilder({
       ),
     );
   }
-  function removeOption(qi, oi) {
+  function removeOption(qi: any, oi: any) {
     setQuestions((p) =>
       p.map((q, i) =>
         i === qi
@@ -134,7 +134,7 @@ export function QuizBuilder({
   function addQuestion() {
     setQuestions((p) => [...p, emptyQuestion()]);
   }
-  function removeQuestion(idx) {
+  function removeQuestion(idx: any) {
     if (questions.length > 1)
       setQuestions((p) => p.filter((_, i) => i !== idx));
   }

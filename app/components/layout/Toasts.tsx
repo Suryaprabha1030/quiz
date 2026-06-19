@@ -11,7 +11,7 @@ interface ToastsProps {
 export default function Toasts({ toasts }: ToastsProps) {
   return (
     <div className="toast-wrap">
-      {toasts.map((t) => (
+      {toasts.map((t: any) => (
         <div key={t.id} className={`toast ${t.type}`}>
           {t.msg}
         </div>

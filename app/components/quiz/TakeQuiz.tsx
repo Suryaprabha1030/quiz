@@ -8,24 +8,28 @@ interface TakeQuizProps {
   toast: (message: string, type?: string) => void;
   onDone: () => void;
 }
+interface CSSVars extends React.CSSProperties {
+  "--pct"?: string;
+}
 
 export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
-  const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState({});
+  const [questions, setQuestions] = useState<any>([]);
+  const [answers, setAnswers] = useState<any>({});
   const [submitted, setSubmitted] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(quiz.time_limit || 0);
   const [elapsed, setElapsed] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [started, setStarted] = useState(false);
+  const LETTERS = ["A", "B", "C", "D", "E"];
 
   useEffect(() => {
     (async () => {
       try {
         const tbl = await sb.from("questions", session?.token);
-        const data = await tbl.select("*", `quiz_id=eq.${quiz.id}`);
+        const data: any = await tbl.select("*", `quiz_id=eq.${quiz.id}`);
         if (Array.isArray(data)) setQuestions(data);
         console.log(data, "questions");
       } catch (e) {
@@ -48,7 +52,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
     setTimeLeft(quiz.time_limit);
 
     const t = setInterval(() => {
-      setTimeLeft((p) => {
+      setTimeLeft((p: any) => {
         if (p <= 1) {
           clearInterval(t);
           handleSubmit();
@@ -83,7 +87,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
     setSubmitting(true);
     let score = 0;
     let total = 0;
-    questions.forEach((q, i) => {
+    questions.forEach((q: any, i: any) => {
       if (q.type === "mc") {
         total++;
         if (answers[i] === q.correct_index) score++;
@@ -92,7 +96,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
         if (answers[i] === q.correct_bool) score++;
       }
     });
-    const res = {
+    const res: any = {
       score,
       total,
       answers: JSON.parse(JSON.stringify(answers)),
@@ -216,14 +220,15 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
     );
   }
   if (submitted && result) {
-    const scorePct =
+    const scorePct: any =
       result.total > 0 ? Math.round((result.score / result.total) * 100) : 0;
     return (
       <div className="page">
         <div className="result-wrap">
           <div
             className="score-ring"
-            style={{ "--pct": `${scorePct * 3.6}deg` }}
+            // style={{ "--pct": `${scorePct * 3.6}deg` }}
+            style={{ "--pct": `${scorePct * 3.6}deg` } as React.CSSProperties}
           >
             <div className="score-inner">
               <div
@@ -288,7 +293,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
               <div className="section-title" style={{ textAlign: "left" }}>
                 Review Answers
               </div>
-              {questions.map((q, i) => {
+              {questions.map((q: any, i: any) => {
                 const userAns = answers[i];
                 const isCorrect =
                   q.type === "mc"
@@ -321,7 +326,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
                     </div>
                     <div className="q-text">{q.text}</div>
                     {q.type === "mc" &&
-                      q.options?.map((opt, oi) => (
+                      q.options?.map((opt: any, oi: any) => (
                         <div
                           key={oi}
                           className={`option-btn ${oi === q.correct_index ? "correct" : oi === userAns && oi !== q.correct_index ? "wrong" : ""}`}
@@ -415,18 +420,18 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
         {answered}/{questions.length} answered
       </div>
 
-      {questions.map((q, i) => (
+      {questions.map((q: any, i: any) => (
         <div key={q.id} className="q-take-card">
           <div className="q-num">
             Question {i + 1} of {questions.length}
           </div>
           <div className="q-text">{q.text}</div>
           {q.type === "mc" &&
-            (q.options || []).map((opt, oi) => (
+            (q.options || []).map((opt: any, oi: any) => (
               <button
                 key={oi}
                 className={`option-btn ${answers[i] === oi ? "selected" : ""}`}
-                onClick={() => setAnswers((p) => ({ ...p, [i]: oi }))}
+                onClick={() => setAnswers((p: any) => ({ ...p, [i]: oi }))}
               >
                 <div className="opt-letter">{LETTERS[oi]}</div>
                 {opt}
@@ -434,11 +439,11 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
             ))}
           {q.type === "tf" && (
             <div className="tf-row">
-              {[true, false].map((v) => (
+              {[true, false].map((v: any) => (
                 <button
                   key={String(v)}
                   className={`option-btn ${answers[i] === v ? "selected" : ""}`}
-                  onClick={() => setAnswers((p) => ({ ...p, [i]: v }))}
+                  onClick={() => setAnswers((p: any) => ({ ...p, [i]: v }))}
                 >
                   <div className="opt-letter">{v ? "T" : "F"}</div>
                   {v ? "True" : "False"}
@@ -452,7 +457,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
               placeholder="Your answer..."
               value={answers[i] || ""}
               onChange={(e) =>
-                setAnswers((p) => ({ ...p, [i]: e.target.value }))
+                setAnswers((p: any) => ({ ...p, [i]: e.target.value }))
               }
             />
           )}
@@ -462,7 +467,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
                 <button
                   key={r}
                   className={`rating-btn-take ${answers[i] === r + 1 ? "selected" : ""}`}
-                  onClick={() => setAnswers((p) => ({ ...p, [i]: r + 1 }))}
+                  onClick={() => setAnswers((p: any) => ({ ...p, [i]: r + 1 }))}
                 >
                   {r + 1}
                 </button>
