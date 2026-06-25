@@ -304,7 +304,21 @@ export function QuizBuilder({
 
             <div className="ai-body">
               <label>Topic</label>
-
+              <input
+                className="input"
+                placeholder="React, JavaScript, AWS..."
+                value={aiTopic}
+                onChange={(e) => setAiTopic(e.target.value)}
+              />
+              <label className="block mb-2 text-sm text-gray-300">
+                Description
+              </label>
+              <input
+                className="input"
+                placeholder="React, JavaScript, AWS..."
+                value={aiTopic}
+                onChange={(e) => setAiTopic(e.target.value)}
+              />
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-2">Multiple Choice</label>
@@ -349,6 +363,26 @@ export function QuizBuilder({
                   </select>
                 </div>
               </div>
+              <label>Difficulty</label>{" "}
+              <select
+                className="input"
+                value={aiDifficulty}
+                onChange={(e) => setAiDifficulty(e.target.value)}
+              >
+                {" "}
+                <option value="easy">Easy</option>{" "}
+                <option value="medium">Medium</option>{" "}
+                <option value="hard">Hard</option>{" "}
+              </select>{" "}
+              <label>Number of Questions</label>{" "}
+              <input
+                className="input"
+                type="number"
+                min={1}
+                max={50}
+                value={aiCount}
+                onChange={(e) => setAiCount(Number(e.target.value))}
+              />
               {/* 
               <input
                 className="input"
@@ -426,7 +460,6 @@ export function QuizBuilder({
                 value={aiCount}
                 onChange={(e) => setAiCount(Number(e.target.value))}
               /> */}
-
               <button
                 className="btn btn-primary"
                 style={{
