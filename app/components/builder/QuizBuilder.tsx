@@ -305,6 +305,51 @@ export function QuizBuilder({
             <div className="ai-body">
               <label>Topic</label>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-2">Multiple Choice</label>
+                  <input
+                    type="number"
+                    className="input"
+                    value={mcCount}
+                    onChange={(e) => setMcCount(Number(e.target.value))}
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2">True / False</label>
+                  <input
+                    type="number"
+                    className="input"
+                    value={tfCount}
+                    onChange={(e) => setTfCount(Number(e.target.value))}
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2">Short Answer</label>
+                  <input
+                    type="number"
+                    className="input"
+                    value={shortCount}
+                    onChange={(e) => setShortCount(Number(e.target.value))}
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2">Difficulty</label>
+                  <select
+                    className="input"
+                    value={aiDifficulty}
+                    onChange={(e) => setAiDifficulty(e.target.value)}
+                  >
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                  </select>
+                </div>
+              </div>
+              {/* 
               <input
                 className="input"
                 placeholder="React, JavaScript, AWS..."
@@ -380,7 +425,7 @@ export function QuizBuilder({
                 max={50}
                 value={aiCount}
                 onChange={(e) => setAiCount(Number(e.target.value))}
-              />
+              /> */}
 
               <button
                 className="btn btn-primary"

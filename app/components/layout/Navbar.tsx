@@ -17,7 +17,10 @@ export default function Navbar({
   return (
     <nav className="nav">
       <div className="nav-actions">
-        <button className="nav-brand" onClick={() => setView("home")}>
+        <button
+          className="nav-brand flex items-center gap-2"
+          onClick={() => setView("home")}
+        >
           <Image
             src="/logo.png"
             alt="QuizForge Logo"
@@ -25,8 +28,8 @@ export default function Navbar({
             height={36}
             className="rounded-md"
           />
-          QuizForge
-          {/* /const companyName = res.user?.user_metadata?.companyName; */}
+
+          <span className="font-bold text-xl">QuizForge</span>
         </button>
         <span className="text-lg nav-brand">
           {" "}

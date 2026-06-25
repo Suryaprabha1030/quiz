@@ -210,7 +210,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
           <span></span>
         </div> */}
         <Link href="/home" className="nav-brand ">
-          <h1 className="text-3xl">
+          <h1 className="text-3xlflex flex-row">
             <Image
               src="/logo.png"
               alt="QuizForge Logo"

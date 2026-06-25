@@ -130,7 +130,7 @@ export default function AdminPage() {
   return (
     <div className="admin-login-page flex flex-col gap-20">
       <Link href="/home" className="nav-brand ">
-        <h1 className="text-3xl ">
+        <h1 className="text-3xl flex flex-row ">
           <Image
             src="/logo.png"
             alt="QuizForge Logo"
