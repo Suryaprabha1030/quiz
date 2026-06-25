@@ -354,7 +354,6 @@ export default function HomePage({
                   className="btn btn-primary btn-sm"
                   // onClick={() => openQuiz(q)}
                   onClick={() => {
-                    alert("clicked");
                     openQuiz(q);
                   }}
                 >

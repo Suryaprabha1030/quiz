@@ -36,13 +36,15 @@ export function QuizBuilder({
   const [questions, setQuestions] = useState([emptyQuestion()]);
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState(null);
-  const router = useRouter();
   const [aiTopic, setAiTopic] = useState("");
   const [aiDifficulty, setAiDifficulty] = useState("medium");
   const [aiCount, setAiCount] = useState(10);
   const [aiLoading, setAiLoading] = useState(false);
   const [showAI, setShowAI] = useState(false);
-
+  const [mcCount, setMcCount] = useState(5);
+  const [tfCount, setTfCount] = useState(3);
+  const [shortCount, setShortCount] = useState(2);
+  const [aiDescription, setAiDescription] = useState("");
   // const [aiTopic, setAiTopic] = useState("");
   // const [aiDifficulty, setAiDifficulty] = useState("medium");
   // const [aiCount, setAiCount] = useState(10);
@@ -55,6 +57,7 @@ export function QuizBuilder({
     try {
       setAiLoading(true);
       setTitle(aiTopic);
+
       const res = await fetch("/api/generate-quiz", {
         method: "POST",
         headers: {
@@ -62,10 +65,28 @@ export function QuizBuilder({
         },
         body: JSON.stringify({
           topic: aiTopic,
-          difficulty: aiDifficulty,
-          count: aiCount,
+          description: aiDescription,
+
+          difficulty: aiDifficulty, // 1-10
+
+          questionCounts: {
+            multipleChoice: mcCount,
+            trueFalse: tfCount,
+            shortAnswer: shortCount,
+          },
         }),
       });
+      // const res = await fetch("/api/generate-quiz", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     topic: aiTopic,
+      //     difficulty: aiDifficulty,
+      //     count: aiCount,
+      //   }),
+      // });
 
       const data = await res.json();
 
@@ -289,6 +310,53 @@ export function QuizBuilder({
                 placeholder="React, JavaScript, AWS..."
                 value={aiTopic}
                 onChange={(e) => setAiTopic(e.target.value)}
+              />
+              <label className="block mb-2 text-sm text-gray-300">
+                Description
+              </label>
+
+              <textarea
+                className="input textarea py-3"
+                placeholder="Focus on useState, useEffect, custom hooks..."
+                value={aiDescription}
+                onChange={(e) => setAiDescription(e.target.value)}
+              />
+              <label className="block mb-2 text-sm text-gray-300">
+                Multiple Choice
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                max="50"
+                className="input"
+                value={mcCount}
+                onChange={(e) => setMcCount(Number(e.target.value))}
+              />
+              <label className="block mb-2 text-sm text-gray-300">
+                True / False
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                max="50"
+                className="input"
+                value={tfCount}
+                onChange={(e) => setTfCount(Number(e.target.value))}
+              />
+
+              <label className="block mb-2 text-sm text-gray-300">
+                Short Answer
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                max="50"
+                className="input"
+                value={shortCount}
+                onChange={(e) => setShortCount(Number(e.target.value))}
               />
 
               <label>Difficulty</label>

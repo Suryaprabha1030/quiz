@@ -113,6 +113,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AdminPage() {
   const [email, setEmail] = useState("");
@@ -129,7 +130,16 @@ export default function AdminPage() {
   return (
     <div className="admin-login-page flex flex-col gap-20">
       <Link href="/home" className="nav-brand ">
-        <h1 className="text-3xl ">🧠 QuizForge</h1>
+        <h1 className="text-3xl ">
+          <Image
+            src="/logo.png"
+            alt="QuizForge Logo"
+            width={36}
+            height={36}
+            className="rounded-md"
+          />
+          QuizForge
+        </h1>
         {/* /const companyName = res.user?.user_metadata?.companyName; */}
       </Link>
       <div className="admin-login-card">

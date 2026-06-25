@@ -1,6 +1,7 @@
 "use client";
 import { sb } from "@/app/lib/supabase";
 import { navigate } from "next/dist/client/components/segment-cache/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -69,7 +70,6 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
   }, [started, quiz.time_limit, submitted]);
 
   async function handleSubmit() {
-    alert("SUBMIT CLICKED");
     if (submitting) return;
     setSubmitting(true);
     let score = 0;
@@ -210,7 +210,16 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
           <span></span>
         </div> */}
         <Link href="/home" className="nav-brand ">
-          <h1 className="text-3xl">🧠 QuizForge</h1>
+          <h1 className="text-3xl">
+            <Image
+              src="/logo.png"
+              alt="QuizForge Logo"
+              width={36}
+              height={36}
+              className="rounded-md"
+            />{" "}
+            QuizForge
+          </h1>
           {/* /const companyName = res.user?.user_metadata?.companyName; */}
         </Link>
         {/* <div className="w-1/2"> */}

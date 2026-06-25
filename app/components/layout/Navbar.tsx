@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 interface NavbarProps {
   session: any;
@@ -17,7 +18,14 @@ export default function Navbar({
     <nav className="nav">
       <div className="nav-actions">
         <button className="nav-brand" onClick={() => setView("home")}>
-          🧠 QuizForge
+          <Image
+            src="/logo.png"
+            alt="QuizForge Logo"
+            width={36}
+            height={36}
+            className="rounded-md"
+          />
+          QuizForge
           {/* /const companyName = res.user?.user_metadata?.companyName; */}
         </button>
         <span className="text-lg nav-brand">

@@ -9,6 +9,7 @@ interface ToastsProps {
   toasts: Toast[];
 }
 export default function Toasts({ toasts }: ToastsProps) {
+  console.log("Toasts:", toasts);
   return (
     <div className="toast-wrap">
       {toasts.map((t: any) => (
