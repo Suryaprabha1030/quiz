@@ -80,7 +80,7 @@
 // };
 
 const SUPABASE_URL = "https://skxguvlqaqnzbbmbhcjg.supabase.co";
-const SUPABASE_ANON_KEY = process.env.supabase_key;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNreGd1dmxxYXFuemJibWJoY2pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExOTQ5NzksImV4cCI6MjA5Njc3MDk3OX0.wZfHVUWK32PbA-0xaIMfh0CBDZ7HqUNPitYg7UIhEgE";
 
 type HeadersType = Record<string, string>;
