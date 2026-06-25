@@ -73,7 +73,7 @@ export default function Page() {
     setSession(null);
     setView("home");
   }
-
+  console.log("Has key:", !!process.env.supabase_key, process.env.supabase_key);
   return (
     <>
       <Navbar
