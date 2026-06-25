@@ -38,7 +38,7 @@ export default function Page() {
   const [view, setView] = useState("home");
   const [activeQuiz, setActiveQuiz] = useState<Quiz | null>(null);
 
-  // const { toasts, show: toast } = useToast();
+  const { toast, show: toast } = useToast();
   useEffect(() => {
     const savedSession = localStorage.getItem("session");
 
