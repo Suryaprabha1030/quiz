@@ -43,19 +43,18 @@ export function AuthPage({ onAuth, toast }: AuthPageProps) {
   }
 
   return (
-    <div className="page-center">
-      <div className="auth-box">
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <div style={{ fontSize: "2.5rem", marginBottom: ".5rem" }}>🧠</div>
-          <h1 className="auth-title">
-            {mode === "login" ? "Welcome back" : "Join QuizForge"}
-          </h1>
-          <p className="auth-sub">
-            {mode === "login"
-              ? "Sign in to create & take quizzes"
-              : "Create your account to get started"}
-          </p>
-        </div>
+    <div className="page-center ">
+      <div style={{ textAlign: "center", marginBottom: "rem" }}>
+        <h1 className="auth-title">
+          {mode === "login" ? "Welcome back" : "Join QuizForge"}
+        </h1>
+        <p className="auth-sub">
+          {mode === "login"
+            ? "Sign in to create & take quizzes"
+            : "Create your account to get started"}
+        </p>
+      </div>
+      <div className="auth-box ">
         {error && <div className="error-msg">{error}</div>}
         <div className="auth-form">
           <div>

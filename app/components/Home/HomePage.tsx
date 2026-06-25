@@ -163,7 +163,7 @@ export default function HomePage({
 }: HomePageProps) {
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"all" | "mine">("all");
+  const [tab, setTab] = useState<"all" | "mine">("mine");
   const router = useRouter();
 
   async function fetchQuizzes() {
@@ -200,44 +200,6 @@ export default function HomePage({
       fetchQuizzes();
     }
   }, [tab]);
-  // useEffect(() => {
-  //   if (session?.user?.id) {
-  //     fetchQuizzes();
-  //   }
-  // }, [session?.user?.id, tab]);
-
-  // async function fetchQuizzes() {
-  //   if (!session?.user?.id) {
-  //     return;
-  //   }
-  //   setLoading(true);
-
-  //   try {
-  //     const tbl = await sb.from("quizzes", session?.token);
-
-  //     // const data = await tbl.select(
-  //     //   "*",
-  //     //   tab === "mine"
-  //     //     ? `created_by=eq.${session?.user?.id}&order=created_at.desc`
-  //     //     : "order=created_at.desc",
-  //     // );
-  //     const query =
-  //       tab === "mine"
-  //         ? `created_by=eq.${session?.user?.id}&order=created_at.desc`
-  //         : "order=created_at.desc";
-  //     const data = await tbl.select("*", query);
-  //     console.log(query, session?.user?.id);
-
-  //     if (Array.isArray(data)) {
-  //       setQuizzes(data);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast("Failed to load quizzes", "error");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
 
   const modes: Record<string, { badge: string; label: string }> = {
     quiz: {
@@ -249,21 +211,6 @@ export default function HomePage({
       label: "Survey",
     },
   };
-
-  // async function openQuiz(quiz: any) {
-  //   console.log("surya clicked", "surya");
-  //   const shareUrl = `${window.location.origin}/quiz/${quiz.id}`;
-
-  //   try {
-  //     await navigator.clipboard.writeText(shareUrl);
-  //     router.push(`/quiz/${quiz.id}`);
-  //     toast("Quiz link copied to clipboard!", "success");
-  //   } catch (error) {
-  //     console.warn("Clipboard write failed", error);
-  //     toast("Opening quiz — link not copied", "warning");
-  //   }
-  //   // router.push(shareUrl);
-  // }
 
   async function openQuiz(quiz: any) {
     const shareUrl = `${window.location.origin}/quiz/${quiz.id}`;
@@ -279,17 +226,6 @@ export default function HomePage({
     // router.push(`/quiz/${quiz.id}`);
   }
 
-  async function copyQuizLink(quiz: any) {
-    const shareUrl = `${window.location.origin}/quiz/${quiz.id}`;
-
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      toast("Quiz link copied!", "success");
-    } catch (error) {
-      console.error(error);
-      toast("Failed to copy link", "error");
-    }
-  }
   return (
     <div className="page-wide">
       <div className="hero">
@@ -340,13 +276,6 @@ export default function HomePage({
             width: "auto",
           }}
         >
-          <button
-            className={`tab ${tab === "all" ? "active" : ""}`}
-            onClick={() => setTab("all")}
-          >
-            All Public
-          </button>
-
           <button
             className={`tab ${tab === "mine" ? "active" : ""}`}
             onClick={() => setTab("mine")}

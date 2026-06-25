@@ -1,5 +1,7 @@
 "use client";
 import { sb } from "@/app/lib/supabase";
+import { navigate } from "next/dist/client/components/segment-cache/navigation";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface TakeQuizProps {
@@ -30,6 +32,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
       try {
         const tbl = await sb.from("questions", session?.token);
         const data: any = await tbl.select("*", `quiz_id=eq.${quiz.id}`);
+        console.log();
         if (Array.isArray(data)) setQuestions(data);
         console.log(data, "questions");
       } catch (e) {
@@ -65,24 +68,8 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
     return () => clearInterval(t);
   }, [started, quiz.time_limit, submitted]);
 
-  // useEffect(() => {
-  //   if (!quiz.time_limit || submitted) return;
-  //   setTimeLeft(quiz.time_limit);
-  //   const t = setInterval(() => {
-  //     setTimeLeft((p) => {
-  //       if (p <= 1) {
-  //         clearInterval(t);
-  //         handleSubmit();
-  //         return 0;
-  //       }
-  //       return p - 1;
-  //     });
-  //   }, 1000);
-  //   return () => clearInterval(t);
-  // }, [quiz.time_limit, submitted]);
-
   async function handleSubmit() {
-    console.log("SUBMIT CLICKED");
+    alert("SUBMIT CLICKED");
     if (submitting) return;
     setSubmitting(true);
     let score = 0;
@@ -105,9 +92,10 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
 
     const attemptQuestions = questions.map((q: any) => ({
       id: q.id,
-      question: q.text,
+      question: q.question,
       type: q.type,
       options: q.options,
+      correct_answer: q.correct_answer,
       correct_index: q.correct_index,
       correct_bool: q.correct_bool,
     }));
@@ -117,13 +105,35 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
     try {
       const tbl = await sb.from("responses", session?.token);
 
+      // await tbl.insert({
+      //   quiz_id: quiz.id,
+      //   creator_email: quiz.creator_email,
+      //   attendee_email: email,
+      //   score,
+      //   total,
+      //   time_taken: elapsed,
+      // });
+
+      const reportId = crypto.randomUUID();
+
+      const shareUrl = `${window.location.origin}/report/${reportId}`;
+
+      console.log(shareUrl, "shareUrl");
+
       await tbl.insert({
+        report_id: reportId,
+        share_url: shareUrl,
+
         quiz_id: quiz.id,
         creator_email: quiz.creator_email,
         attendee_email: email,
+
         score,
         total,
         time_taken: elapsed,
+
+        questions: attemptQuestions,
+        answers,
       });
 
       // await tbl.insert({
@@ -186,10 +196,30 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
     );
   if (!started) {
     return (
-      <div className="page" style={{ maxWidth: 520 }}>
-        <div className="auth-box">
-          <h2 className="take-title">{quiz.title}</h2>
+      <div className=" w-full h-full flex flex-col justify-center items-center gap-20 ">
+        {/* <div className="bubbles">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div> */}
+        <Link href="/home" className="nav-brand ">
+          <h1 className="text-3xl">🧠 QuizForge</h1>
+          {/* /const companyName = res.user?.user_metadata?.companyName; */}
+        </Link>
+        {/* <div className="w-1/2"> */}
+        <h1 className="text-xl mb-10">
+          Continue Your Quiz ! After Enter Your mail
+        </h1>
 
+        <div className="auth-box">
+          <h2 className="text-2xl m-10">{quiz.title}</h2>
           {quiz.description && <p className="take-desc">{quiz.description}</p>}
 
           <div style={{ marginTop: "1.5rem" }}>
@@ -216,6 +246,18 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
             Start Quiz →
           </button>
         </div>
+        {/* </div> */}
+
+        {/* <div className="quiz-toy-cube w-1/2">🎲</div> */}
+
+        {/* <div className="cube-frame">
+          <span className="corner top-left"></span>
+          <span className="corner top-right"></span>
+          <span className="corner bottom-left"></span>
+          <span className="corner bottom-right"></span>
+
+          <div className="auth-boxs">...</div>
+        </div> */}
       </div>
     );
   }
@@ -297,9 +339,9 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
                 const userAns = answers[i];
                 const isCorrect =
                   q.type === "mc"
-                    ? userAns === q.correct_index
+                    ? userAns === q.correct_answer
                     : q.type === "tf"
-                      ? userAns === q.correct_bool
+                      ? userAns === q.correct_answer
                       : true;
                 return (
                   <div
@@ -324,12 +366,12 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
                             ? "Short Answer"
                             : "Rating"}
                     </div>
-                    <div className="q-text">{q.text}</div>
+                    <div className="q-text">{q.question}</div>
                     {q.type === "mc" &&
                       q.options?.map((opt: any, oi: any) => (
                         <div
                           key={oi}
-                          className={`option-btn ${oi === q.correct_index ? "correct" : oi === userAns && oi !== q.correct_index ? "wrong" : ""}`}
+                          className={`option-btn ${oi === q.correct_answer ? "correct" : oi === userAns && oi !== q.correct_answer ? "wrong" : ""}`}
                           style={{ cursor: "default" }}
                         >
                           <div className="opt-letter">{LETTERS[oi]}</div>
@@ -351,7 +393,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
                           : userAns
                             ? "True"
                             : "False"}{" "}
-                        — Correct: {q.correct_bool ? "True" : "False"}
+                        — Correct: {q.correct_answer ? "True" : "False"}
                       </p>
                     )}
                   </div>
@@ -359,13 +401,13 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
               })}
             </div>
           )}
-          <div
+          {/* <div
             style={{ display: "flex", gap: ".75rem", justifyContent: "center" }}
           >
             <button className="btn btn-primary" onClick={onDone}>
               Back to Quizzes
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     );
@@ -425,7 +467,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
           <div className="q-num">
             Question {i + 1} of {questions.length}
           </div>
-          <div className="q-text">{q.text}</div>
+          <div className="q-text">{q.question}</div>
           {q.type === "mc" &&
             (q.options || []).map((opt: any, oi: any) => (
               <button

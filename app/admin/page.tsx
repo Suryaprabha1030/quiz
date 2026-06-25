@@ -112,6 +112,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function AdminPage() {
   const [email, setEmail] = useState("");
@@ -126,9 +127,13 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="admin-login-page">
+    <div className="admin-login-page flex flex-col gap-20">
+      <Link href="/home" className="nav-brand ">
+        <h1 className="text-3xl ">🧠 QuizForge</h1>
+        {/* /const companyName = res.user?.user_metadata?.companyName; */}
+      </Link>
       <div className="admin-login-card">
-        <div className="admin-logo">📊</div>
+        {/* <div className="admin-logo">📊</div> */}
 
         <h1>Creator Dashboard</h1>
 
@@ -137,10 +142,10 @@ export default function AdminPage() {
         </p>
 
         <div className="admin-stats">
-          <div className="stat">
+          {/* <div className="stat">
             <span>📚</span>
             <strong>Manage Quizzes</strong>
-          </div>
+          </div> */}
 
           <div className="stat">
             <span>📈</span>

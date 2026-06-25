@@ -54,7 +54,7 @@ export function QuizBuilder({
 
     try {
       setAiLoading(true);
-
+      setTitle(aiTopic);
       const res = await fetch("/api/generate-quiz", {
         method: "POST",
         headers: {
@@ -165,8 +165,11 @@ export function QuizBuilder({
         creator_email: session.user.email,
         is_public: true,
       });
-
       const quiz = result?.[0];
+
+      const shareUrls = `${window.location.origin}/quiz/${quiz.id}`;
+      console.log(quiz.id, shareUrls, "shareUrls");
+      const quizTables = await sb.from("quizzes", session.token);
 
       if (!quiz?.id) {
         toast("Failed to save quiz", "error");
@@ -177,9 +180,16 @@ export function QuizBuilder({
       // Save questions
       // const questionTable = await sb.from("questions", session.token);
       const questionTable = await sb.from("questions", session.token);
-
+      // const quizTables = await sb.from("quizzes");
       for (let i = 0; i < questions.length; i++) {
         const q = questions[i];
+        const shareUrl = `${window.location.origin}/quiz/${quiz.id}`;
+        await quizTables.update(
+          {
+            shareUrl: shareUrl,
+          },
+          `id=eq.${quiz.id}`,
+        );
 
         await questionTable.insert({
           quiz_id: quiz.id,
@@ -192,6 +202,7 @@ export function QuizBuilder({
               : q.type === "tf"
                 ? q.correct_bool
                 : q.sample_answer,
+          shareUrl: shareUrl,
         });
       }
 
@@ -216,12 +227,12 @@ export function QuizBuilder({
       // console.log("Quiz Link:", shareUrl);
 
       // Copy to clipboard
-      await navigator.clipboard.writeText(shareUrl);
-      router.push(`/quiz/${quiz.id}`);
+      // await navigator.clipboard.writeText(shareUrl);
+      // router.push(`/quiz/${quiz.id}`);
       toast("Quiz published! Link copied 🚀", "success");
 
       // Redirect to live quiz
-      window.location.href = shareUrl;
+      // window.location.href = shareUrl;
     } catch (e) {
       console.error(e);
       toast("Error saving quiz", "error");
@@ -229,53 +240,6 @@ export function QuizBuilder({
 
     setSaving(false);
   }
-  // async function save() {
-  //   if (!title.trim()) {
-  //     toast("Enter a quiz title", "error");
-  //     return;
-  //   }
-  //   if (questions.some((q) => !q.text.trim())) {
-  //     toast("Fill all question texts", "error");
-  //     return;
-  //   }
-  //   setSaving(true);
-  //   try {
-  //     const qtbl = await sb.from("quizzes", session.token);
-  //     const [quiz] = await qtbl.insert({
-  //       title,
-  //       description: desc,
-  //       mode,
-  //       time_limit: timeLimit,
-  //       created_by: session.user.id,
-  //       creator_email: session.user.email,
-  //       is_public: true,
-  //     });
-  //     if (!quiz?.id) {
-  //       toast("Failed to save quiz", "error");
-  //       setSaving(false);
-  //       return;
-  //     }
-  //     const qtbl2 = await sb.from("questions", session.token);
-  //     for (let i = 0; i < questions.length; i++) {
-  //       const q = questions[i];
-  //       await qtbl2.insert({
-  //         quiz_id: quiz.id,
-  //         text: q.text,
-  //         type: q.type,
-  //         options: q.type === "mc" ? q.options : null,
-  //         correct_index: q.type === "mc" ? q.correct_index : null,
-  //         correct_bool: q.type === "tf" ? q.correct_bool : null,
-  //         sample_answer: q.type === "text" ? q.sample_answer : null,
-  //         position: i,
-  //       });
-  //     }
-  //     setSavedId(quiz.id);
-  //     toast("Quiz saved! 🎉", "success");
-  //   } catch (e) {
-  //     toast("Error saving quiz", "error");
-  //   }
-  //   setSaving(false);
-  // }
 
   const shareUrl: string | null = savedId
     ? `${window.location.origin}/quiz/${savedId}`
@@ -300,8 +264,6 @@ export function QuizBuilder({
         <button
           type="button"
           className="btn btn-primary"
-          // onClick={generateWithAI}
-          // disabled={aiLoading}
           onClick={() => setShowAI(true)}
         >
           🤖 Generate with AI
@@ -403,7 +365,7 @@ export function QuizBuilder({
               <div>
                 <label>Description</label>
                 <textarea
-                  className="input textarea"
+                  className="input textarea py-3"
                   placeholder="What's this quiz about?"
                   value={desc}
                   onChange={(e) => setDesc(e.target.value)}
@@ -451,7 +413,7 @@ export function QuizBuilder({
                 <label>Question Text *</label>
                 <textarea
                   className="input textarea"
-                  style={{ minHeight: "54px" }}
+                  // style={{ minHeight: "54px" }}
                   placeholder="Enter your question..."
                   value={q.text}
                   onChange={(e) => updateQ(qi, "text", e.target.value)}

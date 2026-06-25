@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import useToast from "@/hooks/useToast";
@@ -39,6 +39,16 @@ export default function Page() {
   const [activeQuiz, setActiveQuiz] = useState<Quiz | null>(null);
 
   const { toasts, show: toast } = useToast();
+  useEffect(() => {
+    const savedSession = localStorage.getItem("session");
+
+    if (savedSession) {
+      setSession(JSON.parse(savedSession));
+      setView("home");
+    } else {
+      setView("auth");
+    }
+  }, []);
 
   async function openQuiz(quiz: Quiz) {
     console.log("surya clicked", "surya");
