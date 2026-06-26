@@ -145,10 +145,10 @@
 import { useEffect, useState } from "react";
 import { sb } from "@/app/lib/supabase";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface HomePageProps {
   session: any;
-  toast: (message: string, type?: string) => void;
   onCreateQuiz: () => void;
   onTakeQuiz: (quiz: any) => void;
   onViewResults: (quiz: any) => void;
@@ -156,7 +156,6 @@ interface HomePageProps {
 
 export default function HomePage({
   session,
-  toast,
   onCreateQuiz,
   onTakeQuiz,
   onViewResults,
@@ -217,10 +216,12 @@ export default function HomePage({
 
     try {
       await navigator.clipboard.writeText(shareUrl);
-      toast("Quiz link copied to clipboard!", "success");
+      toast.success("Quiz link copied to clipboard!");
     } catch (error) {
       console.warn("Clipboard write failed", error);
-      toast("Opening quiz — link not copied", "warning");
+      toast("Opening quiz — link not copied.", {
+        icon: "⚠️",
+      });
     }
     window.open(shareUrl, "_blank", "noopener,noreferrer");
     // router.push(`/quiz/${quiz.id}`);

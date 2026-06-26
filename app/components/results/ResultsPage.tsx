@@ -1,20 +1,15 @@
 "use client";
 import { sb } from "@/app/lib/supabase";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface ResultsPageProps {
   quiz: any;
   session: any;
-  toast: (message: string, type?: string) => void;
   onBack: () => void;
 }
 
-export function ResultsPage({
-  quiz,
-  session,
-  toast,
-  onBack,
-}: ResultsPageProps) {
+export function ResultsPage({ quiz, session, onBack }: ResultsPageProps) {
   const [responses, setResponses] = useState<any>([]);
   const [questions, setQuestions] = useState<any>([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +31,7 @@ export function ResultsPage({
         );
         if (Array.isArray(qdata)) setQuestions(qdata);
       } catch (e) {
-        toast("Failed to load results", "error");
+        toast.error("Failed to load results");
       }
       setLoading(false);
     })();
@@ -109,7 +104,7 @@ export function ResultsPage({
                 navigator.clipboard.writeText(
                   `${window.location.href}#quiz/${quiz.id}`,
                 );
-                toast("Copied!", "success");
+                toast.success("Link Copied!you can use it");
               }}
             >
               Copy

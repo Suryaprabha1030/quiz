@@ -129,18 +129,19 @@ export default function AdminPage() {
 
   return (
     <div className="admin-login-page flex flex-col gap-20">
-      <Link href="/home" className="nav-brand ">
-        <h1 className="text-3xl flex flex-row ">
-          <Image
-            src="/logo.png"
-            alt="QuizForge Logo"
-            width={36}
-            height={36}
-            className="rounded-md"
-          />
-          QuizForge
-        </h1>
-        {/* /const companyName = res.user?.user_metadata?.companyName; */}
+      <Link
+        href="/home"
+        className="nav-brand flex items-center justify-center gap-2"
+      >
+        <Image
+          src="/logo.png"
+          alt="QuizForge Logo"
+          width={36}
+          height={36}
+          className="rounded-md"
+        />
+
+        <h1 className="text-3xl font-bold">QuizForge</h1>
       </Link>
       <div className="admin-login-card">
         {/* <div className="admin-logo">📊</div> */}

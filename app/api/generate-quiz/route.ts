@@ -2,24 +2,78 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { topic, difficulty, count } = await req.json();
+    const { topic, difficulty, questionCounts, description } = await req.json();
+
+    //     const prompt = `
+    // Generate ${count} multiple choice questions about ${topic}.
+
+    // Difficulty: ${difficulty}
+
+    // Return valid JSON only:
+    // {
+    //   "questions":[
+    //     {
+    //       "text":"Question",
+    //       "type":"mc",
+    //       "options":["A","B","C","D"],
+    //       "correct_index":0
+    //     }
+    //   ]
+    // }
+    // `;
+
+    const totalQuestions =
+      questionCounts.multipleChoice +
+      questionCounts.trueFalse +
+      questionCounts.shortAnswer +
+      questionCounts.rating;
 
     const prompt = `
-Generate ${count} multiple choice questions about ${topic}.
+Generate exactly ${totalQuestions} questions about "${topic}".
 
+Description: ${description || "None"}
 Difficulty: ${difficulty}
 
-Return valid JSON only:
+Question distribution:
+- ${questionCounts.multipleChoice} Multiple Choice
+- ${questionCounts.trueFalse} True/False
+- ${questionCounts.shortAnswer} Short Answer
+- ${questionCounts.rating} Rating (1-10)
+
+Return ONLY valid JSON in this format:
+
 {
-  "questions":[
+  "questions": [
     {
-      "text":"Question",
-      "type":"mc",
-      "options":["A","B","C","D"],
-      "correct_index":0
+      "text": "Question text",
+      "type": "mc",
+      "options": ["A", "B", "C", "D"],
+      "correct_index": 0
+    },
+    {
+      "text": "Question text",
+      "type": "tf",
+      "correct_bool": true
+    },
+    {
+      "text": "Question text",
+      "type": "text",
+      "sample_answer": "Sample answer"
+    },
+    {
+      "text": "Question text",
+      "type": "rating"
     }
   ]
 }
+
+Rules:
+- Generate exactly ${questionCounts.multipleChoice} Multiple Choice questions.
+- Generate exactly ${questionCounts.trueFalse} True/False questions.
+- Generate exactly ${questionCounts.shortAnswer} Short Answer questions.
+- Generate exactly ${questionCounts.rating} Rating questions.
+- Do not generate more or fewer questions.
+- Return JSON only. No markdown or explanations.
 `;
 
     const response = await fetch(

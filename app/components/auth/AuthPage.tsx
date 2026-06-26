@@ -2,13 +2,13 @@
 
 import { sb } from "@/app/lib/supabase";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface AuthPageProps {
   onAuth: (session: any) => void;
-  toast: (message: string, type?: string) => void;
 }
 
-export function AuthPage({ onAuth, toast }: AuthPageProps) {
+export function AuthPage({ onAuth }: AuthPageProps) {
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,11 +30,12 @@ export function AuthPage({ onAuth, toast }: AuthPageProps) {
           : await sb.signUp(email, password, companyName);
       if (res.error || res.error_description) {
         setError(res.error_description || res.error?.message || "Auth failed");
+        toast.error("check your E-mail and password");
       } else if (res.access_token) {
-        toast("Welcome! 🎉", "success");
+        toast.success("Welcome successfully login! 🎉");
         onAuth({ token: res.access_token, user: res.user });
       } else if (mode === "signup") {
-        toast("Check your email to confirm signup!", "success");
+        toast.success("Check your email to confirm signup!");
       }
     } catch (e) {
       setError("Network error – check your Supabase URL/key");
@@ -46,7 +47,7 @@ export function AuthPage({ onAuth, toast }: AuthPageProps) {
     <div className="page-center ">
       <div style={{ textAlign: "center", marginBottom: "rem" }}>
         <h1 className="auth-title">
-          {mode === "login" ? "Welcome back" : "Join QuizForge"}
+          {mode === "login" ? "Welcome Back" : "Join QuizForge"}
         </h1>
         <p className="auth-sub">
           {mode === "login"

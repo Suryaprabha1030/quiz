@@ -146,11 +146,6 @@ export default function QuizPage() {
   }
 
   return (
-    <TakeQuiz
-      quiz={quiz}
-      toast={toast}
-      session={session}
-      onDone={() => router.push("/")}
-    />
+    <TakeQuiz quiz={quiz} session={session} onDone={() => router.push("/")} />
   );
 }

@@ -239,12 +239,14 @@ export default function ReportPage() {
 
       {report.questions?.map((q: any, i: number) => {
         const userAns = report.answers?.[i];
-
+        console.log(userAns, "userAns");
+        const selectedOption = q.type === "mc" ? q.options?.[userAns] : userAns;
         const isCorrect =
           q.type === "mc"
-            ? userAns === q.correct_index
+            ? selectedOption === q.correct_answer
             : q.type === "tf"
-              ? userAns === q.correct_bool
+              ? String(userAns).toLowerCase() ===
+                String(q.correct_answer).toLowerCase()
               : true;
 
         return (
@@ -253,12 +255,6 @@ export default function ReportPage() {
             className="q-take-card"
             style={{
               marginBottom: "1rem",
-              borderColor:
-                q.type === "text" || q.type === "rating"
-                  ? "var(--border)"
-                  : isCorrect
-                    ? "rgba(67,233,123,0.3)"
-                    : "rgba(255,101,132,0.3)",
             }}
           >
             <div className="q-num">Question {i + 1}</div>
@@ -275,13 +271,25 @@ export default function ReportPage() {
                   style={{
                     cursor: "default",
                     marginBottom: "8px",
+                    borderColor:
+                      // Selected & Correct
+                      oi === userAns && q.options[userAns] === q.correct_answer
+                        ? "#22c55e"
+                        : // Selected & Wrong
+                          oi === userAns
+                          ? "#ef4444"
+                          : // Correct Answer
+                            opt === q.correct_answer
+                            ? "#22c55e"
+                            : // Default
+                              "var(--border)",
                   }}
                 >
                   <div className="opt-letter">{LETTERS[oi]}</div>
 
                   {opt}
 
-                  {oi === userAns && (
+                  {/* {oi === userAns && (
                     <span
                       style={{
                         marginLeft: "auto",
@@ -290,9 +298,12 @@ export default function ReportPage() {
                     >
                       👈 Selected
                     </span>
-                  )}
+                  )} */}
 
-                  {oi === q.correct_index && (
+                  {/* {((q.type === "mc" && opt === q.correct_answer) ||
+                    (q.type === "tf" &&
+                      opt.toUpperCase() ===
+                        String(q.correct_answer).slice(1).toLowerCase())) && (
                     <span
                       style={{
                         marginLeft: "10px",
@@ -302,47 +313,71 @@ export default function ReportPage() {
                     >
                       ✅ Correct
                     </span>
-                  )}
+                  )} */}
                 </div>
               ))}
 
             {q.type === "tf" && (
               <>
-                <div className="option-btn">
+                <div
+                  className="option-btn"
+                  style={{
+                    borderColor:
+                      userAns === true
+                        ? q.correct_answer === "true"
+                          ? "#22c55e" // Selected & Correct
+                          : "#ef4444" // Selected & Wrong
+                        : q.correct_answer === "true"
+                          ? "#22c55e" // Correct Answer
+                          : "var(--border)",
+                  }}
+                >
                   True
-                  {userAns === true && (
+                  {/* {userAns === "true" && (
                     <span style={{ marginLeft: "auto" }}>👈 Selected</span>
                   )}
-                  {q.correct_bool === true && (
+                  {q.correct_answer == "true" && (
                     <span style={{ marginLeft: "10px" }}>✅ Correct</span>
-                  )}
+                  )} */}
                 </div>
 
-                <div className="option-btn">
+                <div
+                  className="option-btn"
+                  style={{
+                    borderColor:
+                      userAns === false
+                        ? q.correct_answer === "false"
+                          ? "#22c55e" // Selected & Correct
+                          : "#ef4444" // Selected & Wrong
+                        : q.correct_answer === "false"
+                          ? "#22c55e" // Correct Answer
+                          : "var(--border)",
+                  }}
+                >
                   False
-                  {userAns === false && (
+                  {/* {userAns === "false" && (
                     <span style={{ marginLeft: "auto" }}>👈 Selected</span>
                   )}
-                  {q.correct_bool === false && (
+                  {q.correct_answer == "false" && (
                     <span style={{ marginLeft: "10px" }}>✅ Correct</span>
-                  )}
+                  )} */}
                 </div>
               </>
             )}
 
             {q.type === "text" && (
               <div style={{ marginTop: "10px" }}>
-                <strong>Your Answer:</strong> {userAns || "Not Answered"}
+                <strong>User Answer:</strong> {userAns || "Not Answered"}
               </div>
             )}
 
             {q.type === "rating" && (
               <div style={{ marginTop: "10px" }}>
-                <strong>Your Rating:</strong> {userAns || "-"}
+                <strong>User Rating:</strong> {userAns || "-"}
               </div>
             )}
 
-            {(q.type === "mc" || q.type === "tf") && (
+            {/* {(q.type === "mc" || q.type === "tf") && (
               <div
                 style={{
                   marginTop: "12px",
@@ -362,7 +397,7 @@ export default function ReportPage() {
                   </span>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         );
       })}

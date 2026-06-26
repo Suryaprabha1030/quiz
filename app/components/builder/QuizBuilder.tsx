@@ -1,12 +1,11 @@
 "use client";
 
 import { sb } from "@/app/lib/supabase";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface QuizBuilderProps {
   session: any;
-  toast: (message: string, type?: string) => void;
   onSaved: () => void;
   onCancel: () => void;
 }
@@ -21,11 +20,12 @@ const emptyQuestion = () => ({
   correct_bool: true,
   sample_answer: "",
   position: 0,
+  ratingValue: 5,
 });
 
 export function QuizBuilder({
   session,
-  toast,
+  // toast,
   onSaved,
   onCancel,
 }: QuizBuilderProps) {
@@ -45,12 +45,13 @@ export function QuizBuilder({
   const [tfCount, setTfCount] = useState(3);
   const [shortCount, setShortCount] = useState(2);
   const [aiDescription, setAiDescription] = useState("");
+  const [ratingCount, setRatingCount] = useState(0);
   // const [aiTopic, setAiTopic] = useState("");
   // const [aiDifficulty, setAiDifficulty] = useState("medium");
   // const [aiCount, setAiCount] = useState(10);
   async function generateWithAI() {
     if (!aiTopic.trim()) {
-      toast("Enter topic", "error");
+      toast.error("Enter topic");
       return;
     }
 
@@ -68,50 +69,52 @@ export function QuizBuilder({
           description: aiDescription,
 
           difficulty: aiDifficulty, // 1-10
-
           questionCounts: {
             multipleChoice: mcCount,
             trueFalse: tfCount,
             shortAnswer: shortCount,
+            rating: ratingCount,
           },
+          // questionCounts: {
+          //   multipleChoice: mcCount,
+          //   trueFalse: tfCount,
+          //   shortAnswer: shortCount,
+          // },
         }),
       });
-      // const res = await fetch("/api/generate-quiz", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     topic: aiTopic,
-      //     difficulty: aiDifficulty,
-      //     count: aiCount,
-      //   }),
-      // });
 
       const data = await res.json();
 
       if (!data.questions) {
-        toast("AI generation failed", "error");
+        toast.error("AI generation failed!");
         return;
       }
 
       const mappedQuestions = data.questions.map((q: any, index: number) => ({
         id: Math.random().toString(36).slice(2),
         text: q.text || "",
-        type: "mc",
+        type: q.type || "mc",
         options: q.options || ["", ""],
-        correct_index: q.correct_index || 0,
-        correct_bool: true,
-        sample_answer: "",
+        correct_index: q.correct_index ?? 0,
+        correct_bool: q.correct_bool ?? true,
+        sample_answer: q.sample_answer || "",
         position: index,
+        ratingValue: q.ratingValue ?? 5,
       }));
 
       setQuestions(mappedQuestions);
 
-      toast(`${mappedQuestions.length} questions generated`, "success");
+      toast.success(
+        `${mappedQuestions.length} questions generated successfully!`,
+      );
+
+      setShowAI(false);
+
+      // toast(`${mappedQuestions.length} questions generated`, "success");
     } catch (err) {
       console.error(err);
-      toast("Generation failed", "error");
+      toast.error("Generation failed. Please try again.");
+      setAiLoading(false);
     } finally {
       setAiLoading(false);
     }
@@ -162,12 +165,12 @@ export function QuizBuilder({
 
   async function save() {
     if (!title.trim()) {
-      toast("Enter a quiz title", "error");
+      toast.error("Enter a quiz title");
       return;
     }
 
     if (questions.some((q) => !q.text.trim())) {
-      toast("Fill all question texts", "error");
+      toast.error("Fill all question texts");
       return;
     }
 
@@ -193,7 +196,7 @@ export function QuizBuilder({
       const quizTables = await sb.from("quizzes", session.token);
 
       if (!quiz?.id) {
-        toast("Failed to save quiz", "error");
+        toast.error("Failed to save quiz");
         setSaving(false);
         return;
       }
@@ -250,13 +253,13 @@ export function QuizBuilder({
       // Copy to clipboard
       // await navigator.clipboard.writeText(shareUrl);
       // router.push(`/quiz/${quiz.id}`);
-      toast("Quiz published! Link copied 🚀", "success");
+      // toast.success("Quiz published! Link copied 🚀");
 
       // Redirect to live quiz
       // window.location.href = shareUrl;
     } catch (e) {
       console.error(e);
-      toast("Error saving quiz", "error");
+      toast.error("Error saving quiz");
     }
 
     setSaving(false);
@@ -316,14 +319,16 @@ export function QuizBuilder({
               <input
                 className="input"
                 placeholder="React, JavaScript, AWS..."
-                value={aiTopic}
-                onChange={(e) => setAiTopic(e.target.value)}
+                value={aiDescription}
+                onChange={(e) => setAiDescription(e.target.value)}
               />
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-2">Multiple Choice</label>
                   <input
                     type="number"
+                    min={0}
                     className="input"
                     value={mcCount}
                     onChange={(e) => setMcCount(Number(e.target.value))}
@@ -334,6 +339,7 @@ export function QuizBuilder({
                   <label className="block mb-2">True / False</label>
                   <input
                     type="number"
+                    min={0}
                     className="input"
                     value={tfCount}
                     onChange={(e) => setTfCount(Number(e.target.value))}
@@ -344,9 +350,21 @@ export function QuizBuilder({
                   <label className="block mb-2">Short Answer</label>
                   <input
                     type="number"
+                    min={0}
                     className="input"
                     value={shortCount}
                     onChange={(e) => setShortCount(Number(e.target.value))}
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2">Rating</label>
+                  <input
+                    type="number"
+                    min={0}
+                    className="input"
+                    value={ratingCount}
+                    onChange={(e) => setRatingCount(Number(e.target.value))}
                   />
                 </div>
 
@@ -362,105 +380,98 @@ export function QuizBuilder({
                     <option value="hard">Hard</option>
                   </select>
                 </div>
+                {/* 
+                <div>
+                  <label className="block mb-2">Total Questions</label>
+                  <input
+                    type="number"
+                    className="input"
+                    value={totalQuestions}
+                    readOnly
+                  />
+                </div> */}
               </div>
-              <label>Difficulty</label>{" "}
-              <select
-                className="input"
-                value={aiDifficulty}
-                onChange={(e) => setAiDifficulty(e.target.value)}
-              >
-                {" "}
-                <option value="easy">Easy</option>{" "}
-                <option value="medium">Medium</option>{" "}
-                <option value="hard">Hard</option>{" "}
-              </select>{" "}
-              <label>Number of Questions</label>{" "}
-              <input
-                className="input"
-                type="number"
-                min={1}
-                max={50}
-                value={aiCount}
-                onChange={(e) => setAiCount(Number(e.target.value))}
-              />
-              {/* 
-              <input
-                className="input"
-                placeholder="React, JavaScript, AWS..."
-                value={aiTopic}
-                onChange={(e) => setAiTopic(e.target.value)}
-              />
-              <label className="block mb-2 text-sm text-gray-300">
-                Description
-              </label>
+              {/* <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-2">Multiple Choice</label>
+                  <input
+                    type="number"
+                    className="input"
+                    value={mcCount}
+                    onChange={(e) => setMcCount(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2">True / False</label>
+                  <input
+                    type="number"
+                    className="input"
+                    value={tfCount}
+                    onChange={(e) => setTfCount(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2">Short Answer</label>
+                  <input
+                    type="number"
+                    className="input"
+                    value={shortCount}
+                    onChange={(e) => setShortCount(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2">Difficulty</label>
+                  <select
+                    className="input"
+                    value={aiDifficulty}
+                    onChange={(e) => setAiDifficulty(e.target.value)}
+                  >
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Difficulty</label>{" "}
+                  <select
+                    className="input"
+                    value={aiDifficulty}
+                    onChange={(e) => setAiDifficulty(e.target.value)}
+                  >
+                    {" "}
+                    <option value="easy">Easy</option>{" "}
+                    <option value="medium">Medium</option>{" "}
+                    <option value="hard">Hard</option>{" "}
+                  </select>{" "}
+                </div>
+                <div>
+                  <label>Number of Questions</label>{" "}
+                  <input
+                    className="input"
+                    type="number"
+                    min={1}
+                    max={50}
+                    value={aiCount}
+                    onChange={(e) => setAiCount(Number(e.target.value))}
+                  />
+                </div>
+              </div> */}
 
-              <textarea
-                className="input textarea py-3"
-                placeholder="Focus on useState, useEffect, custom hooks..."
-                value={aiDescription}
-                onChange={(e) => setAiDescription(e.target.value)}
-              />
-              <label className="block mb-2 text-sm text-gray-300">
-                Multiple Choice
-              </label>
-
-              <input
-                type="number"
-                min="0"
-                max="50"
-                className="input"
-                value={mcCount}
-                onChange={(e) => setMcCount(Number(e.target.value))}
-              />
-              <label className="block mb-2 text-sm text-gray-300">
-                True / False
-              </label>
-
-              <input
-                type="number"
-                min="0"
-                max="50"
-                className="input"
-                value={tfCount}
-                onChange={(e) => setTfCount(Number(e.target.value))}
-              />
-
-              <label className="block mb-2 text-sm text-gray-300">
-                Short Answer
-              </label>
-
-              <input
-                type="number"
-                min="0"
-                max="50"
-                className="input"
-                value={shortCount}
-                onChange={(e) => setShortCount(Number(e.target.value))}
-              />
-
-              <label>Difficulty</label>
-
-              <select
-                className="input"
-                value={aiDifficulty}
-                onChange={(e) => setAiDifficulty(e.target.value)}
-              >
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-
-              <label>Number of Questions</label>
-
-              <input
-                className="input"
-                type="number"
-                min={1}
-                max={50}
-                value={aiCount}
-                onChange={(e) => setAiCount(Number(e.target.value))}
-              /> */}
               <button
+                className="btn btn-primary"
+                onClick={generateWithAI}
+                disabled={aiLoading}
+              >
+                {aiLoading ? (
+                  <>
+                    <span className="spinner" /> Generating...
+                  </>
+                ) : (
+                  "🚀 Generate Questions"
+                )}
+              </button>
+
+              {/* <button
                 className="btn btn-primary"
                 style={{
                   width: "100%",
@@ -472,7 +483,7 @@ export function QuizBuilder({
                 }}
               >
                 🚀 Generate Questions
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -487,7 +498,7 @@ export function QuizBuilder({
               onClick={async () => {
                 if (!shareUrl) return;
                 await navigator.clipboard.writeText(shareUrl);
-                toast("Copied!", "success");
+                toast.success("Copied!");
               }}
             >
               Copy
@@ -671,10 +682,55 @@ export function QuizBuilder({
                   />
                 </div>
               )}
-              {q.type === "rating" && (
+              {/* {q.type === "rating" && (
                 <p style={{ fontSize: ".82rem", color: "var(--muted)" }}>
                   Respondents pick a value from 1 to 10.
                 </p>
+              )} */}
+
+              {q.type === "rating" && (
+                <div style={{ marginTop: "1rem" }}>
+                  <label>
+                    Rating: <strong>{q.ratingValue ?? 5}</strong>
+                  </label>
+
+                  <input
+                    type="range"
+                    min={1}
+                    max={10}
+                    step={1}
+                    value={q.ratingValue ?? 5}
+                    onChange={(e) =>
+                      updateQ(qi, "ratingValue", Number(e.target.value))
+                    }
+                    style={{
+                      width: "100%",
+                      marginTop: "10px",
+                      cursor: "pointer",
+                    }}
+                  />
+
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      fontSize: "12px",
+                      color: "var(--muted)",
+                      marginTop: "4px",
+                    }}
+                  >
+                    <span>1</span>
+                    <span>2</span>
+                    <span>3</span>
+                    <span>4</span>
+                    <span>5</span>
+                    <span>6</span>
+                    <span>7</span>
+                    <span>8</span>
+                    <span>9</span>
+                    <span>10</span>
+                  </div>
+                </div>
               )}
             </div>
           ))}

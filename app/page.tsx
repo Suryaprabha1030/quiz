@@ -9,10 +9,10 @@ import HomePage from "./components/Home/HomePage";
 import Navbar from "./components/layout/Navbar";
 import { AuthPage } from "./components/auth/AuthPage";
 import { QuizBuilder } from "./components/builder/QuizBuilder";
-import Toasts from "./components/layout/Toasts";
 import { ResultsPage } from "./components/results/ResultsPage";
 import { TakeQuiz } from "./components/quiz/TakeQuiz";
 import AIQuizGenerator from "./components/builder/AiQuizbuilder";
+import toast from "react-hot-toast";
 
 type Session = {
   token?: string;
@@ -38,7 +38,6 @@ export default function Page() {
   const [view, setView] = useState("home");
   const [activeQuiz, setActiveQuiz] = useState<Quiz | null>(null);
 
-  const { toasts, show: toast } = useToast();
   useEffect(() => {
     const savedSession = localStorage.getItem("session");
 
@@ -57,10 +56,10 @@ export default function Page() {
     try {
       await navigator.clipboard.writeText(shareUrl);
 
-      toast("Quiz link copied to clipboard!", "success");
+      toast.success("Quiz link copied to clipboard!");
     } catch (error) {
       console.warn("Clipboard write failed", error);
-      toast("Opening quiz — link not copied", "warning");
+      toast.error("Opening quiz — link not copied");
     }
     router.push(shareUrl);
   }
@@ -93,14 +92,12 @@ export default function Page() {
             setSession(s);
             setView("home");
           }}
-          toast={toast}
         />
       )}
 
       {view === "home" && (
         <HomePage
           session={session}
-          toast={toast}
           onCreateQuiz={() => (session ? setView("builder") : setView("auth"))}
           onTakeQuiz={openQuiz}
           onViewResults={(q) => {
@@ -113,7 +110,6 @@ export default function Page() {
       {view === "builder" && session && (
         <QuizBuilder
           session={session}
-          toast={toast}
           onSaved={() => setView("home")}
           onCancel={() => setView("home")}
         />
@@ -125,7 +121,6 @@ export default function Page() {
         <TakeQuiz
           quiz={activeQuiz}
           session={session}
-          toast={toast}
           onDone={() => setView("home")}
         />
       )}
@@ -134,12 +129,11 @@ export default function Page() {
         <ResultsPage
           quiz={activeQuiz}
           session={session}
-          toast={toast}
           onBack={() => setView("home")}
         />
       )}
 
-      <Toasts toasts={toasts} />
+      {/* <Toasts toasts={toasts} /> */}
     </>
   );
 }

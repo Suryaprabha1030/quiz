@@ -4,18 +4,18 @@ import { navigate } from "next/dist/client/components/segment-cache/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface TakeQuizProps {
   quiz: any;
   session: any;
-  toast: (message: string, type?: string) => void;
   onDone: () => void;
 }
 interface CSSVars extends React.CSSProperties {
   "--pct"?: string;
 }
 
-export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
+export function TakeQuiz({ quiz, session, onDone }: TakeQuizProps) {
   const [questions, setQuestions] = useState<any>([]);
   const [answers, setAnswers] = useState<any>({});
   const [submitted, setSubmitted] = useState(false);
@@ -37,7 +37,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
         if (Array.isArray(data)) setQuestions(data);
         console.log(data, "questions");
       } catch (e) {
-        toast("Failed to load questions", "error");
+        toast.error("Failed to load questions");
       }
       setLoading(false);
     })();
@@ -127,7 +127,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
         quiz_id: quiz.id,
         creator_email: quiz.creator_email,
         attendee_email: email,
-
+        quiz_title: quiz.title,
         score,
         total,
         time_taken: elapsed,
@@ -196,7 +196,7 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
     );
   if (!started) {
     return (
-      <div className=" w-full h-full flex flex-col justify-center items-center gap-20 ">
+      <div className="w-full h-full pt-10 flex flex-col justify-center items-center gap-20">
         {/* <div className="bubbles">
           <span></span>
           <span></span>
@@ -209,8 +209,8 @@ export function TakeQuiz({ quiz, session, toast, onDone }: TakeQuizProps) {
           <span></span>
           <span></span>
         </div> */}
-        <Link href="/home" className="nav-brand ">
-          <h1 className="text-3xlflex flex-row">
+        <Link href="/home" className="nav-brand mt-10">
+          <h1 className="text-3xl flex flex-row gap-5">
             <Image
               src="/logo.png"
               alt="QuizForge Logo"

@@ -34,7 +34,6 @@ export default function AIQuizGenerator() {
       setQuestions(data.questions || []);
     } catch (e) {
       console.error(e);
-      // toast("Generation failed");
     } finally {
       setLoading(false);
     }

@@ -31,10 +31,12 @@ export default function Navbar({
 
           <span className="font-bold text-xl">QuizForge</span>
         </button>
-        <span className="text-lg nav-brand">
-          {" "}
-          / {session?.user?.user_metadata?.companyName}
-        </span>
+        {session && (
+          <span className="text-lg nav-brand">
+            {" "}
+            / {session?.user?.user_metadata?.companyName}
+          </span>
+        )}
       </div>
       <div className="nav-actions">
         {session ? (
